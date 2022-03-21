@@ -1,0 +1,34 @@
+#!/bin/sh
+ESC=$(printf '\033')
+
+ymls="-f compose.yml"
+
+# Export OPERATION_MODE from .env
+if [ -e ".env" ] && [ -z $OPERATION_MODE ]; then
+  for line in `cat .env | grep '^OPERATION_MODE='`; do
+    eval "$line"
+  done
+fi
+
+# Switch compose.mode.*.yml files
+if [ -z $OPERATION_MODE ]; then
+  echo "${ESC}[33mWARNING${ESC}[m: OPERATION_MODE is not specified."
+else
+  exec_env_yml="compose.mode.${OPERATION_MODE}.yml"
+  if [ -e $exec_env_yml ]; then
+    echo "Starting \`compose $@\` with ${OPERATION_MODE} mode..."
+    ymls="$ymls -f $exec_env_yml"
+  else
+    echo "${ESC}[33mWARNING${ESC}[m: $exec_env_yml not found."
+  fi
+fi
+
+# Add compose.custom.yml file
+if [ ! -e "compose.custom.yml" ]; then
+  echo "${ESC}[36mINFO${ESC}[m: You can customize compose config with compose.custom.yml."
+else
+  ymls="$ymls -f compose.custom.yml"
+fi
+
+# Exec compose
+eval "docker-compose $ymls $@"
