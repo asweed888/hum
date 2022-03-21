@@ -1,34 +1,91 @@
 #!/bin/sh
 ESC=$(printf '\033')
-
 ymls="-f compose.yml"
 
-# Export OPERATION_MODE from .env
-if [ -e ".env" ] && [ -z $OPERATION_MODE ]; then
-  for line in `cat .env | grep '^OPERATION_MODE='`; do
-    eval "$line"
-  done
+
+init_dotEnv () {
+  echo "OPERATION_MODE=development" >> ./.env
+}
+
+init_baseYml () {
+  echo 'version: "3"' > ./compose.d/base.yml
+}
+
+init_operationModeYml () {
+  echo 'version: "3"' > ./compose.d/$OPERATION_MODE.yml
+}
+
+init_customYml () {
+  echo 'version: "3"' > ./compose.d/custom.yml
+}
+
+init_dotDist () {
+  mkdir ./compose.d/.dist
+}
+
+envsubst_yml () {
+  envsubst < ./compose.d/base.yml > ./compose.d/.dist/base.yml
+  envsubst < ./compose.d/$OPERATION_MODE.yml > ./compose.d/.dist/$OPERATION_MODE.yml
+  envsubst < ./compose.d/custom.yml > ./compose.d/.dist/custom.yml
+}
+
+
+if [ ! -e ".env" ]; then
+  echo ".env is not found. Create .env."
+  init_dotEnv
 fi
 
-# Switch compose.mode.*.yml files
+. .env
+for line in `cat .env | grep -v -e '^\s*#' -e '^\s*$'`; do
+  eval "export $line"
+done
 if [ -z $OPERATION_MODE ]; then
-  echo "${ESC}[33mWARNING${ESC}[m: OPERATION_MODE is not specified."
-else
-  exec_env_yml="compose.mode.${OPERATION_MODE}.yml"
-  if [ -e $exec_env_yml ]; then
-    echo "Starting \`compose $@\` with ${OPERATION_MODE} mode..."
-    ymls="$ymls -f $exec_env_yml"
-  else
-    echo "${ESC}[33mWARNING${ESC}[m: $exec_env_yml not found."
-  fi
+  echo "${ESC}[33mWARNING${ESC}[m: OPERATION_MODE is not specified. Append OPERATION_MODE to .env."
+  init_dotEnv
+  OPERATION_MODE=`cat .env | grep '^OPERATION_MODE='`
 fi
 
-# Add compose.custom.yml file
-if [ ! -e "compose.custom.yml" ]; then
-  echo "${ESC}[36mINFO${ESC}[m: You can customize compose config with compose.custom.yml."
-else
-  ymls="$ymls -f compose.custom.yml"
+if [ -z $COMPOSE_PROJECT_NAME ]; then
+  export COMPOSE_PROJECT_NAME=`basename $PWD`
 fi
 
-# Exec compose
+if [ "$OPERATION_MODE" == "custom" ]; then
+  echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'custom'. Please specify another name."
+  exit 1
+fi
+
+if [ ! -e "./compose.d" ]; then
+  echo "compose.d is not found. Prepare initial configuration."
+  mkdir ./compose.d
+  init_dotDist
+  init_baseYml
+  init_operationModeYml
+  init_customYml
+fi
+
+if [ ! -e "./compose.d/.dist" ]; then
+  echo "compose.d/.dist is not found. Prepare initial configuration."
+  init_dotDist
+fi
+
+if [ ! -e "./compose.d/base.yml" ]; then
+  echo "compose.d/base.yml is not found. Create base.yml."
+  init_baseYml
+fi
+
+if [ ! -e "./compose.d/$OPERATION_MODE.yml" ]; then
+  echo "compose.d/$OPERATION_MODE.yml is not found. Create $OPERATION_MODE.yml."
+  init_operationModeYml
+fi
+
+if [ ! -e "./compose.d/custom.yml" ]; then
+  echo "compose.d/custom.yml is not found. Create custom.yml."
+  init_customYml
+fi
+
+
+envsubst_yml
+
+ymls="-f $PWD/compose.d/.dist/base.yml -f $PWD/compose.d/.dist/$OPERATION_MODE.yml -f $PWD/compose.d/.dist/custom.yml"
+
 eval "docker-compose $ymls $@"
