@@ -24,6 +24,12 @@ init_dotDist () {
 }
 
 envsubst_yml () {
+  if [ -e ./compose.d/.env ]; then
+    . ./compose.d/.env
+    for line in `cat ./compose.d/.env | grep -v -e '^\s*#' -e '^\s*$'`; do
+      eval "export $line"
+    done
+  fi
   envsubst < ./compose.d/base.yml > ./compose.d/.dist/base.yml
   envsubst < ./compose.d/$OPERATION_MODE.yml > ./compose.d/.dist/$OPERATION_MODE.yml
   envsubst < ./compose.d/custom.yml > ./compose.d/.dist/custom.yml
