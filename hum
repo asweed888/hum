@@ -15,8 +15,8 @@ init_operationModeYml () {
   echo 'version: "3"' > ./compose.d/$OPERATION_MODE.yml
 }
 
-init_customYml () {
-  echo 'version: "3"' > ./compose.d/custom.yml
+init_gitignoredYml () {
+  echo 'version: "3"' > ./compose.d/gitignored.yml
 }
 
 init_dotDist () {
@@ -32,7 +32,7 @@ envsubst_yml () {
   fi
   envsubst < ./compose.d/base.yml > ./compose.d/.dist/base.yml
   envsubst < ./compose.d/$OPERATION_MODE.yml > ./compose.d/.dist/$OPERATION_MODE.yml
-  envsubst < ./compose.d/custom.yml > ./compose.d/.dist/custom.yml
+  envsubst < ./compose.d/gitignored.yml > ./compose.d/.dist/gitignored.yml
 }
 
 
@@ -66,7 +66,7 @@ if [ ! -e "./compose.d" ]; then
   init_dotDist
   init_baseYml
   init_operationModeYml
-  init_customYml
+  init_gitignoredYml
 fi
 
 if [ ! -e "./compose.d/.dist" ]; then
@@ -84,14 +84,14 @@ if [ ! -e "./compose.d/$OPERATION_MODE.yml" ]; then
   init_operationModeYml
 fi
 
-if [ ! -e "./compose.d/custom.yml" ]; then
-  echo "compose.d/custom.yml is not found. Create custom.yml."
-  init_customYml
+if [ ! -e "./compose.d/gitignored.yml" ]; then
+  echo "compose.d/gitignored.yml is not found. Create gitignored.yml."
+  init_gitignoredYml
 fi
 
 
 envsubst_yml
 
-ymls="-f $PWD/compose.d/.dist/base.yml -f $PWD/compose.d/.dist/$OPERATION_MODE.yml -f $PWD/compose.d/.dist/custom.yml"
+ymls="-f $PWD/compose.d/.dist/base.yml -f $PWD/compose.d/.dist/$OPERATION_MODE.yml -f $PWD/compose.d/.dist/gitignored.yml"
 
 eval "docker-compose $ymls $@"
