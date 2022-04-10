@@ -24,9 +24,9 @@ mod_gitignore () {
     touch ./.gitignore
   fi
 
-  line=`cat ./.gitignore | grep "\./compose\.d/gitignored.yml"`
+  line=`cat ./.gitignore | grep "compose\.d/gitignored.yml"`
   if [ -z "$line"]; then
-    echo "./compose.d/gitignored.yml" >> ./.gitignore
+    echo "compose.d/gitignored.yml" >> ./.gitignore
     echo "Added gitignored.yml to .gitignore because I couldn't find it."
   fi
 }
