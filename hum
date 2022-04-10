@@ -19,6 +19,17 @@ init_gitignoredYml () {
   echo 'version: "3"' > ./compose.d/gitignored.yml
 }
 
+mod_gitignore () {
+  if [ ! -e ./.gitignore ]; then
+    touch ./.gitignore
+  fi
+
+  line=`cat ./.gitignore | grep "\./compose\.d/gitignored.yml"`
+  if [ -z "$line"]; then
+    echo "./compose.d/gitignored.yml" >> ./.gitignore
+  fi
+}
+
 init_dotDist () {
   mkdir ./compose.d/.dist
 }
@@ -88,7 +99,7 @@ if [ ! -e "./compose.d/gitignored.yml" ]; then
   echo "compose.d/gitignored.yml is not found. Create gitignored.yml."
   init_gitignoredYml
 fi
-
+mod_gitignore
 
 envsubst_yml
 
