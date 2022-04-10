@@ -75,10 +75,16 @@ if [ -z $COMPOSE_PROJECT_NAME ]; then
   export COMPOSE_PROJECT_NAME=`basename $PWD`
 fi
 
-if [ "$OPERATION_MODE" == "custom" ]; then
-  echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'custom'. Please specify another name."
+if [ "$OPERATION_MODE" == "base" ]; then
+  echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'base'. Please specify another name."
   exit 1
 fi
+
+if [ "$OPERATION_MODE" == "gitignored" ]; then
+  echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'gitignored'. Please specify another name."
+  exit 1
+fi
+
 
 if [ ! -e "./compose.d" ]; then
   echo "compose.d is not found. Prepare initial configuration."
