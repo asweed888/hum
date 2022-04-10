@@ -48,8 +48,17 @@ envsubst_yml () {
 
 
 if [ ! -e ".env" ]; then
-  echo ".env is not found. Create .env."
-  init_dotEnv
+  read -p "Initial configuration not found, do you want to build hum initial configuration? (y/N): " yn
+  case "$yn" in
+    [yY]*)
+      echo ".env is not found. Create .env."
+      init_dotEnv
+    ;;
+    *)
+      echo "The initial configuration of hum was canceled."
+      exit 0
+    ;;
+  esac
 fi
 
 . .env
