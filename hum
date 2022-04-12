@@ -48,7 +48,7 @@ envsubst_yml () {
 }
 
 
-if [ ! -e ".env" ]; then
+if [ ! -e "./.env" ]; then
   read -p "Initial configuration not found, do you want to build hum initial configuration? (y/N): " yn
   case "$yn" in
     [yY]*)
