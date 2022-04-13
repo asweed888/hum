@@ -19,15 +19,30 @@ init_gitignoredYml () {
   echo 'version: "3"' > ./compose.d/gitignored.yml
 }
 
-mod_gitignore () {
+init_gitignore () {
   if [ ! -e ./.gitignore ]; then
     touch ./.gitignore
   fi
 
+  # .envを.gitignoreに追記
+  line=`cat ./.gitignore | grep "\.env"`
+  if [ -z "$line" ]; then
+    echo ".env" >> ./.gitignore
+    echo ".env was not listed in .gitignore, so it was added."
+  fi
+
+  # .distを.gitignoreに追記
+  line=`cat ./.gitignore | grep "compose\.d/\.dist"`
+  if [ -z "$line" ]; then
+    echo "compose.d/.dist" >> ./.gitignore
+    echo ".dist was not listed in .gitignore, so it was added."
+  fi
+
+  # gitignored.ymlを.gitignoreに追記
   line=`cat ./.gitignore | grep "compose\.d/gitignored\.yml"`
   if [ -z "$line" ]; then
     echo "compose.d/gitignored.yml" >> ./.gitignore
-    echo "Added gitignored.yml to .gitignore because I couldn't find it."
+    echo "gitignored.yml was not listed in .gitignore, so it was added."
   fi
 }
 
@@ -115,7 +130,7 @@ if [ ! -e "./compose.d/gitignored.yml" ]; then
   echo "compose.d/gitignored.yml is not found. Create gitignored.yml."
   init_gitignoredYml
 fi
-mod_gitignore
+init_gitignore
 
 envsubst_yml
 
