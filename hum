@@ -1,6 +1,6 @@
 #!/bin/sh
 ESC=$(printf '\033')
-ymls="-f compose.yml"
+ymls="-f ./compose.d/base.yml"
 
 
 init_dotEnv () {
@@ -31,13 +31,6 @@ init_gitignore () {
     echo ".env was not listed in .gitignore, so it was added."
   fi
 
-  # .distを.gitignoreに追記
-  line=`cat ./.gitignore | grep "compose\.d/\.dist"`
-  if [ -z "$line" ]; then
-    echo "compose.d/.dist" >> ./.gitignore
-    echo ".dist was not listed in .gitignore, so it was added."
-  fi
-
   # gitignored.ymlを.gitignoreに追記
   line=`cat ./.gitignore | grep "compose\.d/gitignored\.yml"`
   if [ -z "$line" ]; then
@@ -46,23 +39,13 @@ init_gitignore () {
   fi
 }
 
-init_dotDist () {
-  mkdir ./compose.d/.dist
-}
+#====================================================================================
+#
+# main
+#
+#====================================================================================
 
-envsubst_yml () {
-  if [ -e ./compose.d/.env ]; then
-    . ./compose.d/.env
-    for line in `cat ./compose.d/.env | grep -v -e '^\s*#' -e '^\s*$'`; do
-      eval "export $line"
-    done
-  fi
-  envsubst < ./compose.d/base.yml > ./compose.d/.dist/base.yml
-  envsubst < ./compose.d/$OPERATION_MODE.yml > ./compose.d/.dist/$OPERATION_MODE.yml
-  envsubst < ./compose.d/gitignored.yml > ./compose.d/.dist/gitignored.yml
-}
-
-
+# .envの存在確認でhumを初期化するかを問う
 if [ ! -e "./.env" ]; then
   read -p "Initial configuration not found, do you want to build hum initial configuration? (y/N): " yn
   case "$yn" in
@@ -77,63 +60,66 @@ if [ ! -e "./.env" ]; then
   esac
 fi
 
+# プロジェクトルートの.envを読み込み一行ごとにexport
 . .env
 for line in `cat .env | grep -v -e '^\s*#' -e '^\s*$'`; do
   eval "export $line"
 done
+
+# .envにOPERATION_MODEの設定がない場合.envにOPERATION_MODEを設定し再読み込み
 if [ -z $OPERATION_MODE ]; then
   echo "${ESC}[33mWARNING${ESC}[m: OPERATION_MODE is not specified. Append OPERATION_MODE to .env."
   init_dotEnv
   OPERATION_MODE=`cat .env | grep '^OPERATION_MODE='`
 fi
 
+# COMPOSE_PROJECT_NAMEの設定がない場合プロジェクトルートのディレクトリ名に
 if [ -z $COMPOSE_PROJECT_NAME ]; then
   export COMPOSE_PROJECT_NAME=`basename $PWD`
 fi
 
+# OPERATION_MODEにはbaseという名前を設定できないというエラーを表示
 if [ "$OPERATION_MODE" == "base" ]; then
   echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'base'. Please specify another name."
   exit 1
 fi
 
+# OPERATION_MODEにはgitignoredという名前は設定できないというエラーを表示
 if [ "$OPERATION_MODE" == "gitignored" ]; then
   echo "${ESC}[31mERROR${ESC}[m: OPERATION_MODE cannot be 'gitignored'. Please specify another name."
   exit 1
 fi
 
-
+# compose.dが存在しない場合compose.dに初期構成を作成
 if [ ! -e "./compose.d" ]; then
   echo "compose.d is not found. Prepare initial configuration."
   mkdir ./compose.d
-  init_dotDist
   init_baseYml
   init_operationModeYml
   init_gitignoredYml
 fi
 
-if [ ! -e "./compose.d/.dist" ]; then
-  echo "compose.d/.dist is not found. Prepare initial configuration."
-  init_dotDist
-fi
-
+# base.ymlがない場合作成
 if [ ! -e "./compose.d/base.yml" ]; then
   echo "compose.d/base.yml is not found. Create base.yml."
   init_baseYml
 fi
 
+# OPERATION_MODE.ymlがない場合作成
 if [ ! -e "./compose.d/$OPERATION_MODE.yml" ]; then
   echo "compose.d/$OPERATION_MODE.yml is not found. Create $OPERATION_MODE.yml."
   init_operationModeYml
 fi
 
+# gitignored.ymlがない場合作成
 if [ ! -e "./compose.d/gitignored.yml" ]; then
   echo "compose.d/gitignored.yml is not found. Create gitignored.yml."
   init_gitignoredYml
 fi
+
+## gitignoreにignoreすべきファイルやディレクトリを追加
 init_gitignore
 
-envsubst_yml
-
-ymls="-f $PWD/compose.d/.dist/base.yml -f $PWD/compose.d/.dist/$OPERATION_MODE.yml -f $PWD/compose.d/.dist/gitignored.yml"
+ymls="-f $PWD/compose.d/base.yml -f $PWD/compose.d/$OPERATION_MODE.yml -f $PWD/compose.d/gitignored.yml"
 
 eval "docker-compose $ymls $@"
