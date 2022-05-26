@@ -61,7 +61,7 @@ if [ ! -e "./.env" ]; then
 fi
 
 # プロジェクトルートの.envを読み込み一行ごとにexport
-. .env
+. ./.env
 for line in `cat .env | grep -v -e '^\s*#' -e '^\s*$'`; do
   eval "export $line"
 done
