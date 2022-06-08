@@ -1,13 +1,12 @@
 # hum
 
-hum(鼻歌)のように楽に気楽に docker-compose を取り扱う為の
+環境別の設定などより柔軟にdocker-composeを扱うための
 docker-compose のラッパースクリプト
 
 ## 前提
 
 - docker インストール済み
 - docker-compose インストール済み
-- envsubst インストール済み
 
 ## インストール
 
@@ -28,8 +27,8 @@ ln -s $PWD/hum/hum /usr/local/bin/hum
 docker-compose の help が表示されます。
 
 ```
-cd /path/to/your_project
-hum
+$ cd /path/to/your_project
+$ hum
 Initial configuration not found, do you want to build hum initial configuration? (y/N): y
 .env is not found. Create .env.
 compose.d is not found. Prepare initial configuration.
