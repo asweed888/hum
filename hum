@@ -32,9 +32,9 @@ init_gitignore () {
   fi
 
   # gitignored.ymlを.gitignoreに追記
-  line=`cat ./.gitignore | grep "compose\.d/gitignored\.yml"`
+  line=`cat ./.gitignore | grep "compose\.d/gitignored\*\.yml"`
   if [ -z "$line" ]; then
-    echo "compose.d/gitignored.yml" >> ./.gitignore
+    echo "compose.d/gitignored*.yml" >> ./.gitignore
     echo "gitignored.yml was not listed in .gitignore, so it was added."
   fi
 }
