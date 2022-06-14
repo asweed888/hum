@@ -1,6 +1,6 @@
 # hum
 
-環境別の設定などより柔軟にdocker-composeを扱うための
+環境別の設定などより柔軟に docker-compose を扱うための
 docker-compose のラッパースクリプト
 
 ## 前提
@@ -94,3 +94,24 @@ Commands:
 
 Docker Compose is now in the Docker CLI, try `docker compose`
 ```
+
+## compose.d 内の 3 種類の docker-compose.yml について
+
+### base.yml
+
+全ての環境に共通した。最も汎用的な設定を記載します。
+
+### <OPERATION_MODE>.yml
+
+`hum`を実行すると.env の`OPERATION_MODE`の値に応じた yaml ファイルが`compose.d/<OPERATION_MODE>.yml`として自動的に作成されます。  
+このファイルは development や production など環境毎に必要な値を設定します。
+
+### gitignored.yml
+
+このファイルは最も固有な設定をしたい場合に利用します。  
+また、`ports`など配列形式の設定値も環境毎に変える必要がある場合は  
+このファイルに記載することが推奨されます。  
+このファイルはその名の通り gitignore されており git で commit される事はありません。  
+git の log に載せたくない値を主に取り扱います。  
+`gitignored.yml`以外にも`gitignored*.yml`も gitignore される為作業リポジトリでブランチを切り替えて作業する際も  
+`gitignored.BAK.yml`などにリネームすれば、以前設定した`gitignored.yml`の内容を退避させることもできます。
