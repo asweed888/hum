@@ -70,7 +70,7 @@ done
 if [ -z $OPERATION_MODE ]; then
   echo "${ESC}[33mWARNING${ESC}[m: OPERATION_MODE is not specified. Append OPERATION_MODE to .env."
   init_dotEnv
-  OPERATION_MODE=`cat .env | grep '^OPERATION_MODE='`
+  eval "export $(cat .env | grep '^OPERATION_MODE=')"
 fi
 
 # COMPOSE_PROJECT_NAMEの設定がない場合プロジェクトルートのディレクトリ名に
