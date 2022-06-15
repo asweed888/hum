@@ -1,7 +1,10 @@
 # hum
 
-環境別の設定などより柔軟に docker-compose を扱うための
-docker-compose のラッパースクリプト
+環境別の設定などより柔軟に docker-compose を扱うための docker-compose のラッパースクリプト  
+プロジェクトルートに`compose.d`ディレクトリを自動で作成し  
+`compose.d`ディレクトリ内の`base.yml`, `<OPERATION_MODE>.yml`(.env の環境変数 OPERATION_MODE に指定),`gitignored.yml`の  
+3 種類の yaml ファイルによって docker-compose を制御します。
+3 種類の yaml の特性については[compose.d 内の 3 種類の docker-compose.yml について](https://github.com/asweed888/hum#composed-%E5%86%85%E3%81%AE-3-%E7%A8%AE%E9%A1%9E%E3%81%AE-docker-composeyml-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)の項を確認してください。
 
 ## 前提
 
@@ -109,9 +112,8 @@ Docker Compose is now in the Docker CLI, try `docker compose`
 ### gitignored.yml
 
 このファイルは最も固有な設定をしたい場合に利用します。  
-また、`ports`など配列形式の設定値も環境毎に変える必要がある場合は  
-このファイルに記載することが推奨されます。  
+あるいは git の歴史に載せたくない設定値を指定する場合にも利用できます。  
+また、`ports`などの設定値も docker-compose の配列型設定値の上書きできないという特性上このファイルに記載することが推奨される場合があります。  
 このファイルはその名の通り gitignore されており git で commit される事はありません。  
-git の log に載せたくない値を主に取り扱います。  
 `gitignored.yml`以外にも`gitignored*.yml`も gitignore される為作業リポジトリでブランチを切り替えて作業する際も  
 `gitignored.BAK.yml`などにリネームすれば、以前設定した`gitignored.yml`の内容を退避させることもできます。
