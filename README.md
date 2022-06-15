@@ -2,8 +2,7 @@
 
 環境別の設定などより柔軟に docker-compose を扱うための docker-compose のラッパースクリプト  
 プロジェクトルートに`compose.d`ディレクトリを自動で作成し  
-`compose.d`ディレクトリ内の`base.yml`, `<OPERATION_MODE>.yml`(.env の環境変数 OPERATION_MODE に指定),`gitignored.yml`の  
-3 種類の yaml ファイルによって docker-compose を制御します。
+`compose.d`ディレクトリ内の`base.yml`, `<OPERATION_MODE>.yml`(.env の環境変数 OPERATION_MODE に指定),`gitignored.yml`の 3 種類の yaml ファイルによって docker-compose を制御します。
 3 種類の yaml の特性については[compose.d 内の 3 種類の docker-compose.yml について](https://github.com/asweed888/hum#composed-%E5%86%85%E3%81%AE-3-%E7%A8%AE%E9%A1%9E%E3%81%AE-docker-composeyml-%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6)の項を確認してください。
 
 ## 前提
