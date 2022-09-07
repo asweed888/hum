@@ -122,4 +122,4 @@ init_gitignore
 
 ymls="-f $PWD/compose.d/base.yml -f $PWD/compose.d/$OPERATION_MODE.yml -f $PWD/compose.d/gitignored.yml"
 
-eval "docker-compose $ymls $@"
+eval "docker compose $ymls $@"
