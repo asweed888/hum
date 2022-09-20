@@ -75,7 +75,7 @@ fi
 
 # COMPOSE_PROJECT_NAMEの設定がない場合プロジェクトルートのディレクトリ名に
 if [ -z $COMPOSE_PROJECT_NAME ]; then
-  export COMPOSE_PROJECT_NAME=`basename $PWD`
+  export COMPOSE_PROJECT_NAME=`basename "$PWD"`
 fi
 
 # OPERATION_MODEにはbaseという名前を設定できないというエラーを表示
@@ -120,6 +120,6 @@ fi
 ## gitignoreにignoreすべきファイルやディレクトリを追加
 init_gitignore
 
-ymls="-f $PWD/compose.d/base.yml -f $PWD/compose.d/$OPERATION_MODE.yml -f $PWD/compose.d/gitignored.yml"
+ymls="-f ./compose.d/base.yml -f ./compose.d/$OPERATION_MODE.yml -f ./compose.d/gitignored.yml"
 
 eval "docker-compose $ymls $@"
