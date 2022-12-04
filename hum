@@ -4,7 +4,9 @@ ymls="-f ./compose.d/base.yml"
 
 
 init_dotEnv () {
-  echo "OPERATION_MODE=development" >> ./.env
+  str="DOLLAR=$
+OPERATION_MODE=development"
+  echo "$str" >> ./.env
 }
 
 init_baseYml () {
