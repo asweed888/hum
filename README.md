@@ -13,8 +13,8 @@
 ## インストール
 
 ```
-git clone git@github.com:asweed888/hum.git
-ln -s $PWD/hum/hum /usr/local/bin/hum
+git clone git@github.com:asweed888/hum.git .hum
+sudo ln -s $PWD/.hum/hum /usr/local/bin/hum
 ```
 
 ## 使用法
