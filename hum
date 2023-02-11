@@ -64,9 +64,11 @@ fi
 
 # プロジェクトルートの.envを読み込み一行ごとにexport
 . ./.env
-for line in `cat .env | grep -v -e '^\s*#' -e '^\s*$'`; do
+while read line; do
   eval "export $line"
-done
+done <<EOS
+$(cat .env | grep -v -e '^\s*#' -e '^\s*$')
+EOS
 
 # .envにOPERATION_MODEの設定がない場合.envにOPERATION_MODEを設定し再読み込み
 if [ -z $OPERATION_MODE ]; then
