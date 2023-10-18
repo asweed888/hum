@@ -13,7 +13,7 @@
 ## インストール
 
 ```
-git clone https://github.com/asweed888/hum.git .hum
+git clone https://github.com/asweed888/hum.git ~/.hum
 sudo ln -s $PWD/.hum/hum /usr/local/bin/hum
 ```
 
