@@ -14,7 +14,7 @@
 
 ```
 git clone https://github.com/asweed888/hum.git ~/.hum
-sudo ln -s $PWD/.hum/hum /usr/local/bin/hum
+sudo ln -s $HOME/.hum/hum /usr/local/bin/hum
 ```
 
 ## 使用法
